@@ -27,10 +27,10 @@ if(isset($_GET["secret"])){
 					
 					if(file_exists("./tempuploads/".$rid.".".$ext)){
 						rename("./tempuploads/".$rid.".".$ext,"./tempuploads/".$rid.".published.".$ext);
-						execInBackground("ffmpeg.exe -t 5 -i ./tempuploads/".$rid.".published.".$ext." -vf \"fps=7,scale=320:-1\" -loop 0 ./v/".$vid.".preview.gif");
-						execInBackground("ffmpeg.exe -i ./tempuploads/".$rid.".published.".$ext." -c:v libx264 -b:v 5M -maxrate 6M -preset medium -vf scale=1920:-2 -r 50 -c:a aac -b:a 256K ./v/".$vid.".1080.mp4");
-						execInBackground("ffmpeg.exe -i ./tempuploads/".$rid.".published.".$ext." -c:v libx264 -b:v 2M -maxrate 3.5M -preset fast -vf scale=1280:-2 -r 50 -c:a aac -b:a 192K ./v/".$vid.".720.mp4");
-						execInBackground("ffmpeg.exe -i ./tempuploads/".$rid.".published.".$ext." -c:v libx264 -b:v 1M -maxrate 1.5M -preset fast -vf scale=640:-2 -r 50 -c:a aac -b:a 128K ./v/".$vid.".360.mp4");
+						execInBackground("ffmpeg -t 5 -i ./tempuploads/".$rid.".published.".$ext." -vf \"fps=7,scale=320:-1\" -loop 0 ./v/".$vid.".preview.gif");
+						execInBackground("ffmpeg -i ./tempuploads/".$rid.".published.".$ext." -c:v libx264 -b:v 5M -maxrate 6M -preset medium -vf scale=1920:-2 -r 50 -c:a aac -b:a 256K ./v/".$vid.".1080.mp4");
+						execInBackground("ffmpeg -i ./tempuploads/".$rid.".published.".$ext." -c:v libx264 -b:v 2M -maxrate 3.5M -preset fast -vf scale=1280:-2 -r 50 -c:a aac -b:a 192K ./v/".$vid.".720.mp4");
+						execInBackground("ffmpeg -i ./tempuploads/".$rid.".published.".$ext." -c:v libx264 -b:v 1M -maxrate 1.5M -preset fast -vf scale=640:-2 -r 50 -c:a aac -b:a 128K ./v/".$vid.".360.mp4");
 						$json_output_obj["error"] = false;
 						$json_output_obj["status"] = "Processing";
 					}else{
