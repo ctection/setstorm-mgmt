@@ -2,23 +2,33 @@
 header("Access-Control-Allow-Origin: *");
 // CONFIGURATION
 
-$secret = "AKbkimfn2uc8G708xQhS";
+$secret = "REPLACE THIS WITH YOUR SECRET";
 $whitelist_enabled = false;
 $whitelist_users = array(1,2,3);
+$superuser = 1;
 
 $json_output_obj = array();
-if(isset($_GET["secret"])){
-	if($_GET["secret"] == $secret){
-		if(isset($_GET["action"])){
+if(isset($_GET["secret"])) {
+	if(!is_dir("./tempuploads/")) {
+		mkdir("./tempuploads/");
+		file_put_contents("./tempuploads/.htaccess","Require all denied");
+	}
+		
+	if(!is_dir("./v/")) {
+		mkdir("./v/");
+		file_put_contents("./v/.htaccess","Require all denied");
+	}
+	if($_GET["secret"] == $secret) {
+		if(isset($_GET["action"])) {
 			if($_GET["action"] == "ping"){
 				$json_output_obj["error"] = false;
 				$json_output_obj["message"] = "Pong";
 			}
-			if($_GET["action"] == "speedtest"){
+			if($_GET["action"] == "speedtest") {
 				$data = str_repeat(rand(0,9), 1500000);
 				echo $data;
 			}
-			if($_GET["action"] == "finalize_upload"){
+			if($_GET["action"] == "finalize_upload") {
 				if(isset($_GET["rid"]) && isset($_GET["vid"]) && isset($_GET["fileext"])){
 					
 					$rid = filter_var($_GET["rid"],FILTER_SANITIZE_STRING);
@@ -27,7 +37,7 @@ if(isset($_GET["secret"])){
 					
 					if(file_exists("./tempuploads/".$rid.".".$ext)){
 						rename("./tempuploads/".$rid.".".$ext,"./tempuploads/".$rid.".published.".$ext);
-						execInBackground("ffmpeg -t 5 -i ./tempuploads/".$rid.".published.".$ext." -vf \"fps=7,scale=320:-1\" -loop 0 ./v/".$vid.".preview.gif");
+						execInBackground("ffmpeg -t 10 -i ./tempuploads/".$rid.".published.".$ext." -vf \"fps=7,scale=380:-1\" -loop 0 ./v/".$vid.".preview.gif");
 						execInBackground("ffmpeg -i ./tempuploads/".$rid.".published.".$ext." -c:v libx264 -b:v 5M -maxrate 6M -preset medium -vf scale=1920:-2 -r 50 -c:a aac -b:a 256K ./v/".$vid.".1080.mp4");
 						execInBackground("ffmpeg -i ./tempuploads/".$rid.".published.".$ext." -c:v libx264 -b:v 2M -maxrate 3.5M -preset fast -vf scale=1280:-2 -r 50 -c:a aac -b:a 192K ./v/".$vid.".720.mp4");
 						execInBackground("ffmpeg -i ./tempuploads/".$rid.".published.".$ext." -c:v libx264 -b:v 1M -maxrate 1.5M -preset fast -vf scale=640:-2 -r 50 -c:a aac -b:a 128K ./v/".$vid.".360.mp4");
@@ -55,6 +65,11 @@ if(isset($_GET["secret"])){
 					$json_output_obj["error"] = false;
 					$json_output_obj["token"] = $upload_token;
 				}
+			}
+			if($_GET["action"] == "diskusage"){
+				$json_output_obj["error"] = false;
+				$json_output_obj["total"] = disk_total_space("./v/");
+				$json_output_obj["free"] = disk_free_space("./v/");
 			}
 		}else{
 			$json_output_obj["error"] = true;
@@ -98,9 +113,7 @@ if(isset($_POST["start"]) && isset($_POST["end"]) && isset($_POST["fileext"]) &&
 			}
 		}
 		
-		if(!is_dir("./tempuploads/")){
-			mkdir("./tempuploads/");
-		}
+		
 		
 		$rid = filter_var($_POST["rid"],FILTER_SANITIZE_STRING);
 		$ext = filter_var($_POST["fileext"],FILTER_SANITIZE_STRING);
