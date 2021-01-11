@@ -2,10 +2,10 @@
 header("Access-Control-Allow-Origin: *");
 // CONFIGURATION
 
-$secret = "REPLACE THIS WITH YOUR SECRET";
+$secret = "REPLACE WITH CUSTOM SECRET";
 $whitelist_enabled = false;
 $whitelist_users = array(1,2,3);
-$superuser = 1;
+$superuser = array(1);
 
 $json_output_obj = array();
 if(isset($_GET["secret"])) {
