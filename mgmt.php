@@ -68,8 +68,8 @@ if(isset($_GET["secret"])) {
 			}
 			if($_GET["action"] == "diskusage"){
 				$json_output_obj["error"] = false;
-				$json_output_obj["total"] = disk_total_space("./");
-				$json_output_obj["free"] = disk_free_space("./");
+				$json_output_obj["total"] = disk_total_space(__DIR__);
+				$json_output_obj["free"] = disk_free_space(__DIR__);
 			}
 		}else{
 			$json_output_obj["error"] = true;
